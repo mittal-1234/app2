@@ -244,24 +244,51 @@ export const generateDetailedRounds = (profile, skills) => {
 
 export const saveToHistory = ({ company, role, jdText, extractedSkills, readinessScore, plan, checklist, questions }) => {
 
-    // Generate Intel on save
+    // 1. Fallback for Empty Skills
+    const hasSkills = Object.values(extractedSkills).some(arr => arr.length > 0);
+    let finalSkills = extractedSkills;
+
+    if (!hasSkills) {
+        finalSkills = {
+            ...extractedSkills,
+            'Other': ['Communication', 'Problem Solving', 'Basic Coding', 'Projects']
+        };
+    }
+
+    // 2. Generate Intel
     const companyProfile = getCompanyProfile(company);
-    const detailedRounds = generateDetailedRounds(companyProfile, extractedSkills);
+    const detailedRounds = generateDetailedRounds(companyProfile, finalSkills);
+
+    // 3. Score Stability (Base vs Final)
+    // readinessScore passed in is the BASE score computed from analysis
+    const baseScore = readinessScore;
+    const finalScore = readinessScore; // Initially same
 
     const history = JSON.parse(localStorage.getItem('prp_history') || '[]');
+
+    // 4. Strict Schema
     const newEntry = {
         id: Date.now().toString(),
         createdAt: new Date().toISOString(),
-        company,
-        role,
-        jdText,
-        extractedSkills,
-        readinessScore,
-        plan,
-        checklist, // Keeping old checklist for backward capability or display fallback
-        questions,
-        companyProfile, // New
-        detailedRounds // New
+        updatedAt: new Date().toISOString(),
+        company: company || "",
+        role: role || "",
+        jdText: jdText || "",
+        extractedSkills: finalSkills,
+
+        // Mappings & Plan
+        roundMapping: detailedRounds,
+        checklist: checklist, // Keep for legacy compatibility if needed
+        plan7Days: plan,      // Renamed for clarity in schema, but passed as 'plan' from UI
+        questions: questions,
+
+        // Intel
+        companyProfile,
+
+        // Scoring & Interactive
+        baseScore: baseScore,
+        currentScore: finalScore, // Using 'currentScore' to track live changes
+        skillConfidence: {}       // Empty initially
     };
 
     history.unshift(newEntry);

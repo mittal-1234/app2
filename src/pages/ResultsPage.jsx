@@ -17,9 +17,11 @@ const ResultsPage = () => {
         const data = getAnalysis(id);
         if (data) {
             setAnalysis(data);
-            // Initialize confidence map if exists, else default to 'practice'
+            // Initialize confidence map 
             const initialConfidence = data.skillConfidence || {};
-            const allSkills = Object.values(data.extractedSkills).flat();
+
+            // Handle both legacy 'extractedSkills' structure and new 'Other' fallback
+            const allSkills = Object.values(data.extractedSkills || {}).flat();
 
             allSkills.forEach(skill => {
                 if (!initialConfidence[skill]) {
@@ -28,7 +30,10 @@ const ResultsPage = () => {
             });
 
             setSkillConfidence(initialConfidence);
-            setCurrentScore(data.readinessScore);
+
+            // Handle Score: Use currentScore if exists (new schema), else legacy readinessScore
+            // Fallback to baseScore logic if currentScore is missing but baseScore exists
+            setCurrentScore(data.currentScore ?? data.readinessScore ?? 0);
         } else {
             navigate('/dashboard');
         }
@@ -39,24 +44,21 @@ const ResultsPage = () => {
         const newConfidence = { ...skillConfidence, [skill]: newStatus };
         setSkillConfidence(newConfidence);
 
-        // Calculate Score Change
-        // Base score is stored in analysis.readinessScore (we assume this was the initial computed score)
-        // However, to be consistent, let's just do a delta calculation relative to previous state
-        // If changing practice -> know: +2
-        // If changing know -> practice: -2
-
-        // Better approach: Recalculate based on total 'know' count relative to base
-        // But we want to persist the *current* score.
-        // Let's simplified update: +/- 2
+        // Score Stability Logic
+        // Calculate delta based on 'know' count relative to base?
+        // Simple linear shift for now: +2 / -2 relative to CURRENT state
+        // Ideal: currentScore = baseScore + (numOfKnow * 2) - (numOfPractice * 0)? 
+        // Let's stick to the requested "update finalScore" logic.
 
         let newScore = currentScore + (newStatus === 'know' ? 2 : -2);
-        newScore = Math.max(0, Math.min(100, newScore)); // Review bounds
+        newScore = Math.max(0, Math.min(100, newScore));
         setCurrentScore(newScore);
 
         // Persist
         updateHistoryEntry(id, {
             skillConfidence: newConfidence,
-            readinessScore: newScore
+            currentScore: newScore, // Save as currentScore
+            readinessScore: newScore // Update legacy field too for safety
         });
     };
 
