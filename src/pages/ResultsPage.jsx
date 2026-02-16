@@ -4,7 +4,7 @@ import { getAnalysis, updateHistoryEntry } from '../services/analysisService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import { CheckCircle2, ArrowLeft, Calendar, FileText, Code, Users, Download, Copy, RefreshCw, Trophy, AlertCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, Calendar, FileText, Code, Users, Download, Copy, RefreshCw, Trophy, AlertCircle, ArrowRight, Zap } from 'lucide-react';
 
 const ResultsPage = () => {
     const { id } = useParams();
