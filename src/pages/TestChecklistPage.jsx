@@ -3,16 +3,16 @@ import { ShieldCheck, AlertTriangle, RefreshCcw, ChevronRight } from 'lucide-rea
 import { Link } from 'react-router-dom';
 
 const TEST_ITEMS = [
-    { id: 't1', label: 'JD required validation works', hint: 'Blocked "Analyze" with empty JD.' },
-    { id: 't2', label: 'Short JD warning shows for <200 chars', hint: 'Noticeable alert for small inputs.' },
-    { id: 't3', label: 'Skills extraction groups correctly', hint: 'Categorization accuracy (Java -> Languages).' },
-    { id: 't4', label: 'Round mapping changes based on company', hint: 'Amazon vs Startup dynamic flow.' },
-    { id: 't5', label: 'Score calculation is deterministic', hint: 'Same JD yields exact same result.' },
-    { id: 't6', label: 'Skill toggles update score live', hint: 'Score reacts to confidence toggles.' },
-    { id: 't7', label: 'Changes persist after refresh', hint: 'State saved in localStorage.' },
-    { id: 't8', label: 'History saves and loads correctly', hint: 'Entry visible in history list.' },
-    { id: 't9', label: 'Export buttons copy correct content', hint: 'Plan/Checklist copy to clipboard.' },
-    { id: 't10', label: 'No console errors on core pages', hint: 'Zero errors in F12 console.' },
+    { id: 't1', label: 'JD required validation works', hint: 'Empty submit shows disabled button or error.' },
+    { id: 't2', label: 'Short JD warning shows for <200 chars', hint: 'Paste short text to see the warning.' },
+    { id: 't3', label: 'Skills extraction groups correctly', hint: 'Check Skills section for correct categories.' },
+    { id: 't4', label: 'Round mapping changes based on company + skills', hint: 'Compare Enterprise vs Startup flows.' },
+    { id: 't5', label: 'Score calculation is deterministic', hint: 'Same JD should always give same base score.' },
+    { id: 't6', label: 'Skill toggles update score live', hint: 'Click skills and watch the score change.' },
+    { id: 't7', label: 'Changes persist after refresh', hint: 'Reload page; toggles and score remain.' },
+    { id: 't8', label: 'History saves and loads correctly', hint: 'Check History page for your analysis.' },
+    { id: 't9', label: 'Export buttons copy the correct content', hint: 'Test "Copy Plan" or "Download" buttons.' },
+    { id: 't10', label: 'No console errors on core pages', hint: 'Open DevTools (F12) and check Console.' },
 ];
 
 const TestChecklistPage = () => {
