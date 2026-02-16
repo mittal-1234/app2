@@ -16,9 +16,18 @@ const ProofPage = () => {
     const [formData, setFormData] = React.useState(() => {
         try {
             const saved = localStorage.getItem('prp_final_submission');
-            return saved ? JSON.parse(saved) : { lovable: '', github: '', deployed: '' };
+            const initial = saved ? JSON.parse(saved) : {};
+            return {
+                lovable: initial.lovable || '',
+                github: initial.github || 'https://github.com/mittal-1234/app2',
+                deployed: initial.deployed || 'https://app2-ebon.vercel.app'
+            };
         } catch (e) {
-            return { lovable: '', github: '', deployed: '' };
+            return {
+                lovable: '',
+                github: 'https://github.com/mittal-1234/app2',
+                deployed: 'https://app2-ebon.vercel.app'
+            };
         }
     });
 
@@ -131,8 +140,8 @@ Core Capabilities:
                                 onClick={copyToClipboard}
                                 disabled={!isValid}
                                 className={`w-full py-5 font-serif italic text-xl font-black flex items-center justify-center gap-3 transition-all ${!isValid
-                                        ? 'bg-gray-100 text-gray-300 cursor-not-allowed border-2 border-dashed border-gray-200'
-                                        : 'bg-[#111111] text-white hover:bg-[#A10000]'
+                                    ? 'bg-gray-100 text-gray-300 cursor-not-allowed border-2 border-dashed border-gray-200'
+                                    : 'bg-[#111111] text-white hover:bg-[#A10000]'
                                     }`}
                             >
                                 {copied ? <Check size={20} /> : <Copy size={20} />}

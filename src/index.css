@@ -1,18 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: hsl(245 58% 51%);
-  --color-primary-hover: hsl(245 58% 45%);
+  --color-background: #F7F6F3;
+  --color-foreground: #111111;
+  --color-accent: #8B0000;
+  --color-accent-hover: #660000;
+  --color-success: #2F5E3D;
+  --color-warning: #9A6B15;
+  --color-muted: rgba(17, 17, 17, 0.6);
+  --color-border: rgba(17, 17, 17, 0.1);
+
+  --font-serif: "Playfair Display", "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  line-height: 1.6;
   font-weight: 400;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Typography Utilities */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Selection */
+::selection {
+  background-color: var(--color-accent);
+  color: white;
 }
