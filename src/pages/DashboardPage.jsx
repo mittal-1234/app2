@@ -4,7 +4,7 @@ import {
     Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
 import {
-    BarChart3, ArrowRight, Calendar, Clock, ChevronRight, Zap, Target, FileText
+    BarChart3, ArrowRight, Calendar, Clock, ChevronRight, Zap, Target, FileText, CheckCircle2, Play, Trophy
 } from 'lucide-react';
 import {
     extractSkills, calculateScore, generatePlan, generateChecklist, generateQuestions, saveToHistory
