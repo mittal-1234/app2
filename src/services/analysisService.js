@@ -148,7 +148,8 @@ export const generateQuestions = (skills) => {
         "How do you stay updated with the latest tech trends?",
         "Explain the CAP theorem.",
         "What is CI/CD and why is it important?",
-        "Explain the concept of microservices architecture."
+        "Explain the concept of microservices architecture.",
+        "Explain the difference between Authentication and Authorization."
     ];
 
     return [...questions, ...generics].slice(0, 10);
