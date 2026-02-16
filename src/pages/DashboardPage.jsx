@@ -4,7 +4,7 @@ import {
     Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
 import {
-    BarChart3, ArrowRight, Calendar, Clock, ChevronRight, Zap, Target, FileText
+    BarChart3, ArrowRight, Calendar, Clock, ChevronRight, Zap, Target, FileText, CheckCircle
 } from 'lucide-react';
 import {
     extractSkills, calculateScore, generatePlan, generateChecklist, generateQuestions, saveToHistory
@@ -48,43 +48,47 @@ const DashboardPage = () => {
     };
 
     return (
-        <div className="space-y-16 animate-fade-in text-[#111111]">
-            <div className="border-b border-[#111111]/10 pb-8">
-                <h1 className="text-5xl font-serif font-bold italic tracking-tight uppercase leading-none mb-2">DASHBOARD</h1>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] opacity-40">Personal Placement Readiness Console</p>
+        <div className="space-y-8 animate-fade-in text-gray-900 font-sans">
+            <div>
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+                <p className="text-gray-500 mt-2">Track your placement readiness and prepare for upcoming interviews.</p>
             </div>
 
             {/* Main Form Section */}
-            <div className="grid grid-cols-1 gap-16 items-start">
-                <div className="space-y-8">
-                    <h2 className="text-2xl font-serif font-bold italic uppercase flex items-center gap-3">
-                        <Target size={24} className="text-[#8B0000]" /> NEW ANALYSIS
-                    </h2>
-                    <Card className="space-y-8 shadow-[12px_12px_0px_0px_#111111]">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="lg:col-span-2 space-y-6">
+                    <Card className="space-y-6 shadow-sm border border-gray-200">
+                        <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                                <Target size={20} />
+                            </div>
+                            <h2 className="text-lg font-semibold text-gray-900">New Analysis</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Input
-                                label="Company"
+                                label="Target Company"
                                 placeholder="e.g. Amazon"
                                 value={formData.company}
                                 onChange={e => setFormData({ ...formData, company: e.target.value })}
                             />
                             <Input
-                                label="Position"
+                                label="Target Position"
                                 placeholder="e.g. SDE-1"
                                 value={formData.role}
                                 onChange={e => setFormData({ ...formData, role: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-4">
-                            <label className="text-xs font-bold uppercase tracking-widest opacity-60">Job Description</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Job Description</label>
                             <textarea
-                                className="w-full bg-[#F7F6F3] border border-[#111111]/10 focus:border-[#8B0000] p-6 h-64 text-sm leading-relaxed focus:outline-none transition-all resize-none font-sans"
-                                placeholder="Paste the full job description here..."
+                                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 h-48 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none"
+                                placeholder="Paste the full job description here to analyze your compatibility..."
                                 value={formData.jdText}
                                 onChange={e => setFormData({ ...formData, jdText: e.target.value })}
                             />
                             {formData.jdText.length > 0 && formData.jdText.length < 200 && (
-                                <div className="flex items-center gap-2 text-[#8B0000] text-[10px] font-bold uppercase tracking-widest bg-[#8B0000]/5 p-2 px-4">
+                                <div className="flex items-center gap-2 text-amber-600 text-xs font-medium bg-amber-50 p-2 rounded-md">
                                     <Zap size={14} /> Analysis requires more data (min. 200 chars recommended).
                                 </div>
                             )}
@@ -92,88 +96,89 @@ const DashboardPage = () => {
                         <Button
                             onClick={handleAnalyze}
                             disabled={!formData.jdText}
-                            className={`w-full text-lg ${!formData.jdText ? '' : 'shadow-lg shadow-red-900/10'}`}
+                            className="w-full"
                         >
-                            START ANALYSIS
+                            Start Analysis
                         </Button>
                     </Card>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="space-y-6">
                     {/* Overall Stats */}
-                    <div className="space-y-8">
-                        <h2 className="text-xl font-serif font-bold italic uppercase flex items-center gap-3">
-                            <BarChart3 size={20} className="text-[#8B0000]" /> OVERVIEW
-                        </h2>
-                        <Card className="space-y-6">
-                            <div className="flex items-end justify-between">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Aggregated Score</p>
-                                    <p className="text-6xl font-serif font-bold italic leading-none">72%</p>
-                                </div>
-                                <Zap size={40} className="text-[#8B0000]" fill="currentColor" />
+                    <Card className="space-y-6">
+                        <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                                <BarChart3 size={20} />
                             </div>
-                            <div className="h-2 bg-[#F7F6F3] w-full border border-[#111111]/5">
-                                <div className="bg-[#8B0000] h-full" style={{ width: '72%' }}></div>
+                            <h2 className="text-lg font-semibold text-gray-900">Readiness Score</h2>
+                        </div>
+
+                        <div className="flex items-end justify-between">
+                            <div className="space-y-1">
+                                <p className="text-4xl font-bold text-indigo-600">72%</p>
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Aggregate Performance</p>
                             </div>
-                        </Card>
-                    </div>
+                            <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <Zap size={20} fill="currentColor" />
+                            </div>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                            <div className="bg-indigo-600 h-full rounded-full transition-all duration-1000" style={{ width: '72%' }}></div>
+                        </div>
+                    </Card>
 
                     {/* Skill Chart */}
-                    <div className="space-y-8">
-                        <h2 className="text-xl font-serif font-bold italic uppercase flex items-center gap-3">
-                            <Radar size={20} className="text-[#8B0000]" /> SKILL MATRIX
-                        </h2>
-                        <Card className="p-0 aspect-square flex items-center justify-center">
-                            <div className="w-full h-full p-4">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                                        <PolarGrid stroke="#11111110" />
-                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#111111', fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)' }} />
-                                        <Radar
-                                            name="Performance"
-                                            dataKey="A"
-                                            stroke="#8B0000"
-                                            fill="#8B0000"
-                                            fillOpacity={0.4}
-                                        />
-                                    </RadarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </Card>
-                    </div>
+                    <Card className="flex flex-col items-center justify-center min-h-[300px]">
+                        <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4 w-full text-left">Skill Matrix</h3>
+                        <div className="w-full h-[250px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                                    <PolarGrid stroke="#e5e7eb" />
+                                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 10, fontWeight: 500 }} />
+                                    <Radar
+                                        name="Performance"
+                                        dataKey="A"
+                                        stroke="#4f46e5"
+                                        fill="#4f46e5"
+                                        fillOpacity={0.3}
+                                    />
+                                </RadarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </Card>
                 </div>
             </div>
 
             {/* Assessment Timeline */}
-            <div className="pt-16 border-t border-[#111111]/10 space-y-8">
-                <h2 className="text-2xl font-serif font-bold italic uppercase flex items-center gap-3">
-                    <Calendar size={24} className="text-[#8B0000]" /> UPCOMING MILESTONES
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="pt-8">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Calendar size={20} className="text-indigo-600" />
+                        Upcoming Milestones
+                    </h2>
+                    <Button variant="ghost" className="text-sm">View Calendar</Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { title: 'DSA MOCK EVAL', time: 'TOMORROW 10:00', type: 'TECHNICAL' },
-                        { title: 'SYSTEM DESIGN', time: 'WED 14:00', type: 'STRATEGY' },
-                        { title: 'CULTURE FIT', time: 'FRI 11:00', type: 'BEHAVIORAL' }
+                        { title: 'DSA Mock Evaluation', time: 'Tomorrow, 10:00 AM', type: 'Technical' },
+                        { title: 'System Design Round', time: 'Wed, 2:00 PM', type: 'Strategy' },
+                        { title: 'Culture Fit Assessment', time: 'Fri, 11:00 AM', type: 'Behavioral' }
                     ].map((item, i) => (
-                        <div key={i} className="group p-8 border border-[#111111]/10 hover:border-[#8B0000] hover:bg-white transition-all duration-300 space-y-4 cursor-pointer">
-                            <div className="flex justify-between items-start">
-                                <div className="w-10 h-10 border border-[#111111]/10 flex items-center justify-center group-hover:border-[#8B0000] group-hover:bg-[#8B0000] group-hover:text-white transition-all">
+                        <Card key={i} className="hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer group">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                                     <Clock size={20} />
                                 </div>
-                                <Badge variant="neutral" className="group-hover:bg-[#111111] group-hover:text-white transition-colors">{item.type}</Badge>
+                                <Badge variant="neutral" className="bg-gray-100 text-gray-600 group-hover:bg-indigo-100 group-hover:text-indigo-700">{item.type}</Badge>
                             </div>
-                            <div className="space-y-1">
-                                <h4 className="text-lg font-serif font-bold italic uppercase tracking-tight">{item.title}</h4>
-                                <p className="text-[10px] font-bold opacity-40 tracking-[0.2em]">{item.time}</p>
+                            <div>
+                                <h4 className="font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">{item.title}</h4>
+                                <p className="text-sm text-gray-500 mt-1">{item.time}</p>
                             </div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
-            </div>
-
-            <div className="text-center opacity-10 text-[8px] font-bold uppercase tracking-[0.8em] pt-16 pb-8">
-                KodNest Premium Build System • Protocol Established
             </div>
         </div>
     );
