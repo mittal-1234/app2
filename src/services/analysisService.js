@@ -128,14 +128,27 @@ export const generateQuestions = (skills) => {
     if (flatSkills.includes('java')) questions.push("Explain the internal working of HashMap in Java.");
     if (flatSkills.includes('python')) questions.push("What are decorators and generators in Python?");
     if (flatSkills.includes('javascript')) questions.push("Explain Closures and Hoisting with examples.");
+    if (flatSkills.includes('typescript')) questions.push("What are the differences between Interface and Type in TypeScript?");
+    if (flatSkills.includes('redux')) questions.push("Explain the Redux data flow (Action -> Reducer -> Store).");
+    if (flatSkills.includes('aws')) questions.push("Describe the difference between EC2 and Lambda.");
+    if (flatSkills.includes('html')) questions.push("What are Semantic HTML tags and why are they important?");
+    if (flatSkills.includes('css')) questions.push("Explain the Box Model and Flexbox vs Grid.");
+    if (flatSkills.includes('git')) questions.push("What is the difference between git merge and git rebase?");
     if (flatSkills.includes('docker')) questions.push("Difference between an Image and a Container?");
+    if (flatSkills.includes('mongodb')) questions.push("How does MongoDB handle relationships compared to SQL?");
+    if (flatSkills.includes('rest api')) questions.push("What are the idempotent HTTP methods?");
 
     // Fillers if finding specific questions is hard
     const generics = [
         "Tell me about a challenging bug you fixed.",
         "How do you prioritize features vs tech debt?",
         "Explain SOLID principles.",
-        "Design a URL shortening service (System Design)."
+        "Design a URL shortening service (System Design).",
+        "Describe a time you had a conflict with a team member.",
+        "How do you stay updated with the latest tech trends?",
+        "Explain the CAP theorem.",
+        "What is CI/CD and why is it important?",
+        "Explain the concept of microservices architecture."
     ];
 
     return [...questions, ...generics].slice(0, 10);
