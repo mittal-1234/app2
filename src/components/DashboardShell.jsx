@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, FileCheck, Library, User, Menu, X, History } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FileCheck, Library, User, Menu, X, History, ShieldCheck } from 'lucide-react';
 
 const DashboardShell = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -17,8 +17,7 @@ const DashboardShell = () => {
         { icon: FileCheck, label: 'Assessments', path: '/assessments' },
         { icon: Library, label: 'Resources', path: '/resources' },
         { icon: User, label: 'Profile', path: '/profile' },
-        // Keeping legacy PRP routes accessible via direct link if needed, but not in main nav
-        // { icon: CheckSquare, label: 'Proof of Work', path: '/prp/proof' },
+        { icon: ShieldCheck, label: 'Verify & Ship', path: '/prp/07-test' },
     ];
 
     return (
