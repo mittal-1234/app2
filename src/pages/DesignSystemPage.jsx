@@ -6,7 +6,7 @@ import Badge from '../components/ui/Badge';
 
 const DesignSystemPage = () => {
     return (
-        <div className="space-y-12">
+        <div className="space-y-16">
             <div>
                 <h1 className="text-4xl mb-4 font-serif font-bold italic">Design System Showcase</h1>
                 <p className="text-lg opacity-60">Verification of the KodNest Premium Build System components and styles.</p>

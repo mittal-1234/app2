@@ -11,7 +11,7 @@ const ProofFooter = () => {
     ];
 
     return (
-        <div className="h-16 border-t border-[#111111]/10 bg-white flex items-center justify-between px-8 fixed bottom-0 left-0 w-full z-50">
+        <div className="h-16 border-t border-[#111111]/10 bg-white flex items-center justify-between px-10 fixed bottom-0 left-0 w-full z-50">
             <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">
                 System Status
             </div>

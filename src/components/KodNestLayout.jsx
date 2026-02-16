@@ -8,8 +8,8 @@ const KodNestLayout = () => {
         <div className="min-h-screen flex flex-col bg-[#F7F6F3]">
             <TopBar />
 
-            <main className="flex-1 flex flex-col relative pb-20"> {/* pb-20 for footer */}
-                <div className="flex-1 max-w-[1400px] w-full mx-auto p-8 grid grid-cols-1 lg:grid-cols-[70%_30%] gap-12">
+            <main className="flex-1 flex flex-col relative pb-16"> {/* pb-16 (64px) for footer */}
+                <div className="flex-1 max-w-[1400px] w-full mx-auto p-10 grid grid-cols-1 lg:grid-cols-[70%_30%] gap-16">
 
                     {/* Primary Workspace (70%) */}
                     <div className="space-y-8">
