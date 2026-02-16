@@ -1,70 +1,79 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getHistory } from '../services/analysisService';
-import { History, Calendar, Clock, Briefcase, ArrowRight, ChevronRight, Zap } from 'lucide-react';
+import Card from '../components/ui/Card';
+import Badge from '../components/ui/Badge';
+import { Clock, ArrowRight, Trash2 } from 'lucide-react';
+import Button from '../components/ui/Button';
 
 const HistoryPage = () => {
-    const [history, setHistory] = React.useState([]);
+    const navigate = useNavigate();
+    const [history, setHistory] = useState([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setHistory(getHistory());
     }, []);
 
+    const clearHistory = () => {
+        if (confirm('Are you sure you want to clear all history?')) {
+            localStorage.removeItem('prp_history');
+            setHistory([]);
+        }
+    };
+
     return (
-        <div className="space-y-16 animate-fade-in pb-24 text-[#111111]">
-            <div className="border-b-2 border-[#111111] pb-10">
-                <h1 className="text-5xl font-serif font-black italic tracking-tighter uppercase leading-none">HISTORY</h1>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] opacity-40 mt-2">Archives of past placement readiness analyses</p>
+        <div className="space-y-8 animate-fade-in font-sans">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">History</h1>
+                    <p className="text-gray-500 mt-2">Previous analysis reports and readiness scores.</p>
+                </div>
+                {history.length > 0 && (
+                    <Button variant="ghost" onClick={clearHistory} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                        <Trash2 size={18} className="mr-2" /> Clear History
+                    </Button>
+                )}
             </div>
 
-            {history.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {history.map((entry) => (
-                        <Link key={entry.id} to={`/results/${entry.id}`} className="group block">
-                            <div className="bg-white border-2 border-[#111111] p-10 space-y-8 shadow-[12px_12px_0px_0px_#111111] group-hover:shadow-[16px_16px_0px_0px_#A10000] transition-all relative overflow-hidden">
-                                <div className="flex justify-between items-start relative z-10">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 bg-[#A10000] rotate-45"></div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{new Date(entry.createdAt).toLocaleDateString()}</p>
-                                        </div>
-                                        <h2 className="text-4xl font-serif font-black italic tracking-tighter leading-none uppercase group-hover:text-[#A10000] transition-colors">{entry.company || 'Analysis Result'}</h2>
-                                        <p className="text-lg font-serif italic opacity-60">{entry.role || 'Placement Preparation Strategy'}</p>
-                                    </div>
-                                    <div className="text-right border-l-2 border-[#111111]/5 pl-8 shrink-0">
-                                        <span className="text-[10px] font-black uppercase tracking-widest opacity-20 block mb-1">Score</span>
-                                        <p className="text-5xl font-serif font-black italic leading-none">{entry.finalScore || entry.readinessScore || 0}<span className="text-xs opacity-20 ml-1">/100</span></p>
-                                    </div>
-                                </div>
-
-                                <div className="pt-8 border-t border-[#111111]/5 flex justify-between items-center relative z-10">
-                                    <div className="flex gap-4">
-                                        {entry.extractedSkills && Object.values(entry.extractedSkills).flat().slice(0, 3).map((skill, idx) => (
-                                            <span key={idx} className="text-[8px] font-black uppercase tracking-widest bg-[#F7F6F3] px-3 py-1.5 border border-[#111111]/5">{skill}</span>
-                                        ))}
-                                    </div>
-                                    <ChevronRight size={24} className="group-hover:translate-x-2 transition-transform duration-300 group-hover:text-[#A10000]" />
-                                </div>
-                                <Zap size={80} className="absolute -bottom-8 -right-8 text-[#111111]/5 group-hover:text-[#A10000]/5 transition-colors -rotate-12" fill="currentColor" />
-                            </div>
-                        </Link>
-                    ))}
+            {history.length === 0 ? (
+                <div className="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                    <Clock size={48} className="mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900">No Analysis History</h3>
+                    <p className="text-gray-500 mb-6">Start a new analysis to see your results here.</p>
+                    <Button onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
                 </div>
             ) : (
-                <div className="bg-white border-2 border-[#111111] p-24 text-center space-y-8 shadow-[12px_12px_0px_0px_#111111]">
-                    <div className="w-24 h-24 border-2 border-[#111111]/10 flex items-center justify-center mx-auto opacity-20">
-                        <History size={48} />
-                    </div>
-                    <div className="space-y-2">
-                        <h2 className="text-3xl font-serif font-black italic uppercase">NO ARCHIVES FOUND</h2>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-40">Your analysis history will appear here once protocol is initiated.</p>
-                    </div>
-                    <Link
-                        to="/dashboard"
-                        className="inline-block px-12 py-5 bg-[#111111] text-white font-serif font-black italic text-2xl hover:bg-[#A10000] transition-all shadow-xl"
-                    >
-                        INITIATE ANALYSIS
-                    </Link>
+                <div className="grid gap-4">
+                    {history.map((entry) => (
+                        <Card
+                            key={entry.id}
+                            className="flex flex-col md:flex-row items-start md:items-center justify-between hover:shadow-md transition-shadow cursor-pointer group"
+                            onClick={() => navigate(`/results/${entry.id}`)}
+                        >
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                        {entry.company || 'Untitled Analysis'}
+                                    </h3>
+                                    <Badge variant="neutral">{entry.role || 'General Role'}</Badge>
+                                </div>
+                                <p className="text-sm text-gray-500 flex items-center gap-2">
+                                    <Clock size={14} />
+                                    {new Date(entry.createdAt).toLocaleDateString()} at {new Date(entry.createdAt).toLocaleTimeString()}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-6 mt-4 md:mt-0 w-full md:w-auto justify-between md:justify-end">
+                                <div className="flex flex-col items-end">
+                                    <span className="text-2xl font-bold text-indigo-600">{entry.readinessScore}%</span>
+                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Score</span>
+                                </div>
+                                <div className="p-2 bg-gray-50 rounded-full text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                    <ArrowRight size={20} />
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
                 </div>
             )}
         </div>

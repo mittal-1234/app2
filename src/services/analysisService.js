@@ -1,179 +1,118 @@
-const ENTERPRISE_COMPANIES = [
-    'amazon', 'google', 'microsoft', 'meta', 'apple', 'tcs', 'infosys', 'wipro', 'hcl', 'accenture', 'capgemini', 'ibm', 'oracle', 'cisco'
-];
+import { v4 as uuidv4 } from 'uuid';
 
-export const getCompanyIntel = (name = '') => {
-    const lowerName = name.toLowerCase().trim();
-    if (!lowerName) return null;
+// --- Configuration ---
 
-    const isEnterprise = ENTERPRISE_COMPANIES.some(c => lowerName.includes(c));
-    const intel = {
-        name: name,
-        industry: 'Technology Services', // Heuristic guess
-        size: isEnterprise ? 'Enterprise (2000+)' : 'Startup (<200)',
-        sizeKey: isEnterprise ? 'enterprise' : 'startup',
-        focus: isEnterprise
-            ? 'Structured DSA + Core CS Fundamentals + Aptitude'
-            : 'Practical Problem Solving + Stack Depth + System Discussion'
-    };
-
-    return intel;
+const CATEGORIES = {
+    'Core CS': ['dsa', 'data structures', 'algorithms', 'oop', 'dbms', 'operating systems', 'os', 'networking', 'computer networks', 'system design', 'distributed systems'],
+    'Languages': ['java', 'python', 'javascript', 'js', 'typescript', 'ts', 'c++', 'cpp', 'c#', 'csharp', 'golang', 'go', 'ruby', 'php', 'swift', 'kotlin', 'rust'],
+    'Web': ['react', 'react.js', 'reactjs', 'next.js', 'nextjs', 'node', 'node.js', 'nodejs', 'express', 'express.js', 'angular', 'vue', 'html', 'css', 'tailwind', 'rest api', 'graphql', 'redux'],
+    'Data': ['sql', 'mysql', 'postgresql', 'postgres', 'mongodb', 'mongo', 'redis', 'cassandra', 'elasticsearch', 'kafka', 'spark', 'hadoop'],
+    'Cloud/DevOps': ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'k8s', 'jenkins', 'ci/cd', 'github actions', 'linux', 'bash', 'shell', 'terraform'],
+    'Testing': ['selenium', 'cypress', 'playwright', 'jest', 'mocha', 'junit', 'pytest']
 };
 
-export const generateRoundMap = (intel, skills) => {
-    if (!intel) return [];
-
-    const hasDSA = skills['Core CS']?.includes('DSA');
-    const hasWeb = skills['Web']?.length > 0;
-
-    if (intel.sizeKey === 'enterprise') {
-        const rounds = [
-            {
-                name: 'Round 1: Online Assessment',
-                focus: 'DSA + Aptitude',
-                why: 'Filters candidates on basic problem-solving and logic speeds.'
-            },
-            {
-                name: 'Round 2: Technical Interview I',
-                focus: 'DSA + Core CS (OS/DBMS)',
-                why: 'Deep dive into computer science fundamentals and algorithmic thinking.'
-            },
-            {
-                name: 'Round 3: Technical Interview II',
-                focus: 'Projects + High-Level Design',
-                why: 'Evaluates your ability to build and explain complex systems.'
-            },
-            {
-                name: 'Round 4: HR / Culture Fit',
-                focus: 'Behavioral + STAR Method',
-                why: 'Ensures alignment with company values and long-term retention.'
-            }
-        ];
-        return rounds;
-    } else {
-        const rounds = [
-            {
-                name: 'Round 1: Practical Coding / Assignment',
-                focus: hasWeb ? 'Feature Implementation' : 'Logic Building',
-                why: 'Verifies real-world coding ability over theoretical knowledge.'
-            },
-            {
-                name: 'Round 2: Technical Discussion',
-                focus: 'System Architecture + Tech Stack',
-                why: 'Assesses depth in the specific stack required for the role.'
-            },
-            {
-                name: 'Round 3: Founder / Culture Fit',
-                focus: 'Vision Alignment + Ownership',
-                why: 'Crucial for small teams where culture and speed are everything.'
-            }
-        ];
-        return rounds;
-    }
+const PLAN_TEMPLATE = {
+    1: { title: "Day 1-2: Foundations & Core CS", focus: "Refresh fundamental concepts and language basics." },
+    2: { title: "Day 3-4: DSA & Problem Solving", focus: "Practice intense coding problems on LeetCode/GFG." },
+    3: { title: "Day 5: Project & Frameworks", focus: "Deep dive into your tech stack and project portfolio." },
+    4: { title: "Day 6: Mock Interviews", focus: "Simulate interview environment and behavioral prep." },
+    5: { title: "Day 7: Final Revision", focus: "Review weak areas and cheat sheets." }
 };
 
-const SKILL_CATEGORIES = {
-    'Core CS': ['DSA', 'OOP', 'DBMS', 'OS', 'Networks'],
-    'Languages': ['Java', 'Python', 'JavaScript', 'TypeScript', 'C', 'C++', 'C#', 'Go'],
-    'Web': ['React', 'Next.js', 'Node.js', 'Express', 'REST', 'GraphQL'],
-    'Data': ['SQL', 'MongoDB', 'PostgreSQL', 'MySQL', 'Redis'],
-    'Cloud/DevOps': ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'CI/CD', 'Linux'],
-    'Testing': ['Selenium', 'Cypress', 'Playwright', 'JUnit', 'PyTest']
-};
+// --- Logic ---
 
-export const extractSkills = (jdText) => {
-    const detected = {
-        coreCS: [],
-        languages: [],
-        web: [],
-        data: [],
-        cloud: [],
-        testing: [],
-        other: []
-    };
-    const lowerJD = jdText.toLowerCase();
+export const extractSkills = (text) => {
+    if (!text) return {};
+    const lowerText = text.toLowerCase();
+    const extracted = {};
 
-    const categoryMap = {
-        'Core CS': 'coreCS',
-        'Languages': 'languages',
-        'Web': 'web',
-        'Data': 'data',
-        'Cloud/DevOps': 'cloud',
-        'Testing': 'testing'
-    };
-
-    Object.entries(SKILL_CATEGORIES).forEach(([category, skills]) => {
-        const matched = skills.filter(skill => {
-            const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`\\b${escaped}\\b`, 'i');
-            return regex.test(lowerJD);
+    Object.entries(CATEGORIES).forEach(([category, keywords]) => {
+        const found = keywords.filter(kw => {
+            // Simple word boundary check or inclusion
+            const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            return regex.test(lowerText) || lowerText.includes(kw); // Fallback for things like C++
         });
-
-        if (matched.length > 0) {
-            detected[categoryMap[category]] = matched;
+        if (found.length > 0) {
+            extracted[category] = found;
         }
     });
 
-    // Default behavior if no skills detected
-    const totalDetected = Object.values(detected).flat().length;
-    if (totalDetected === 0) {
-        detected.other = ["Communication", "Problem solving", "Basic coding", "Projects"];
-    }
-
-    return detected;
+    return extracted;
 };
 
-export const calculateScore = (data) => {
-    let score = 35;
-    const categories = extractSkills(data.jdText);
-    const categoryCount = Object.values(categories).filter(c => c.length > 0).length;
+export const calculateScore = (formData) => {
+    let score = 35; // Base score
+    const skills = extractSkills(formData.jdText);
 
-    score += Math.min(categoryCount * 5, 30);
-    if (data.company && data.company.trim()) score += 10;
-    if (data.role && data.role.trim()) score += 10;
-    if (data.jdText.length > 800) score += 10;
+    // +5 per category
+    const categoriesCount = Object.keys(skills).length;
+    score += Math.min(categoriesCount * 5, 30);
+
+    // Metadata
+    if (formData.company && formData.company.length > 2) score += 10;
+    if (formData.role && formData.role.length > 2) score += 10;
+    if (formData.jdText && formData.jdText.length > 800) score += 10;
 
     return Math.min(score, 100);
 };
 
 export const generatePlan = (skills) => {
-    const hasFrontend = skills.web?.some(s => ['React', 'Next.js'].includes(s));
-    const hasBackend = skills.web?.some(s => ['Node.js', 'Express'].includes(s)) || skills.data?.length > 0;
+    const plan = JSON.parse(JSON.stringify(PLAN_TEMPLATE)); // Clone
+    const skillList = Object.values(skills).flat();
 
-    const basePlan = [
-        { day: 'Day 1–2', focus: 'Basics + Core CS', activities: 'Revise OOPs, DBMS, and OS concepts. Brush up on core language fundamentals.' },
-        { day: 'Day 3–4', focus: 'DSA + Coding', activities: `Focus on ${skills.coreCS?.includes('DSA') ? 'advanced' : ''} DSA patterns. Practice 5-10 LeetCode medium problems.` },
-        { day: 'Day 5', focus: 'Project & Stack', activities: `Deep dive into ${hasFrontend ? 'Frontend' : ''} ${hasBackend ? 'and Backend' : ''} requirements. Align your projects with JD.` },
-        { day: 'Day 6', focus: 'Mock Interviews', activities: 'Practice behavior questions and conduct a peer mock interview.' },
-        { day: 'Day 7', focus: 'Revision', activities: 'Quick revision of weak areas and final resume check.' }
-    ];
+    // Adapt plan based on skills
+    if (skills['Web']?.length > 0) {
+        plan[3].focus += ` Specific focus on ${skills['Web'].slice(0, 3).join(', ')}.`;
+    }
+    if (skills['Data']?.length > 0) {
+        plan[1].focus += ` Review database normalization and SQL queries.`;
+    }
 
-    return basePlan;
+    return Object.values(plan);
 };
 
 export const generateChecklist = (skills) => {
-    const allDetected = Object.values(skills).flat();
+    const flatSkills = Object.values(skills).flat();
+    const hasWeb = skills['Web']?.length > 0;
+    const hasData = skills['Data']?.length > 0;
+
     return [
         {
-            roundTitle: 'Round 1: Aptitude / Basics',
+            round: "Round 1: Aptitude & Basics",
             items: [
-                'Quantitative & Logical Reasoning practice',
-                'Verbal ability brush-up',
-                'Basic programming syntax revision'
+                "Quantitative Aptitude (Time & Work, Probability)",
+                "Logical Reasoning (Puzzles, Data Interpretation)",
+                "Verbal Ability (Reading Comprehension)",
+                "Basic Language Syntax & IO"
             ]
         },
         {
-            roundTitle: 'Round 2: DSA + Core CS',
+            round: "Round 2: DSA & Core CS",
             items: [
-                ...allDetected.slice(0, 3).map(s => `Master ${s} fundamentals`),
-                'Complexity analysis of common patterns'
+                "Arrays, Strings, and Linked Lists",
+                "Trees, Graphs, and DP Basics",
+                "OOP Principles (Polymorphism, Inheritance)",
+                "DBMS (ACID Properties, Normalization)",
+                "OS Concepts (Process, Thread, Deadlock)"
             ]
         },
         {
-            roundTitle: 'Round 3: Tech Interview',
+            round: "Round 3: Tech Interview & Projects",
             items: [
-                'In-depth walk-through of primary project',
-                'Explain architectural decisions in past work'
+                `Project Architecture Deep Dive`,
+                hasWeb ? "Frontend Optimization Techniques" : "Code Quality & Clean Code",
+                hasWeb ? "API Design & Integration" : "System Design Basics",
+                hasData ? "Database Indexing & Query Tuning" : "Error Handling & Debugging",
+                `Explain your role in ${flatSkills[0] || 'recent projects'}`
+            ]
+        },
+        {
+            round: "Round 4: Managerial & HR",
+            items: [
+                "Why this company?",
+                "Strengths and Weaknesses",
+                "Conflict Resolution Examples",
+                "Future Goals & Career Path"
             ]
         }
     ];
@@ -181,88 +120,52 @@ export const generateChecklist = (skills) => {
 
 export const generateQuestions = (skills) => {
     const questions = [];
-    const allDetected = Object.values(skills).flat().map(s => s.toLowerCase());
+    const flatSkills = Object.keys(skills).flatMap(k => skills[k]);
 
-    if (allDetected.includes('sql') || allDetected.includes('dbms'))
-        questions.push("Explain indexing and when it helps or hurts performance.");
-    if (allDetected.includes('react'))
-        questions.push("Compare different state management options in React.");
-    if (allDetected.includes('dsa'))
-        questions.push("Describe a scenario where you would choose a Hash Map over a Balanced BST.");
+    if (flatSkills.includes('react')) questions.push("Explain the Virtual DOM and Reconciliation algorithm.");
+    if (flatSkills.includes('node')) questions.push("How does Node.js handle concurrency (Event Loop)?");
+    if (flatSkills.includes('sql')) questions.push("Explain the difference between clustered and non-clustered indexes.");
+    if (flatSkills.includes('java')) questions.push("Explain the internal working of HashMap in Java.");
+    if (flatSkills.includes('python')) questions.push("What are decorators and generators in Python?");
+    if (flatSkills.includes('javascript')) questions.push("Explain Closures and Hoisting with examples.");
+    if (flatSkills.includes('docker')) questions.push("Difference between an Image and a Container?");
 
-    while (questions.length < 10) {
-        questions.push("Discuss a challenging project and how you overcame a major technical block.");
-        questions.push("How do you keep your skills updated with the latest industry trends?");
-        if (questions.length >= 10) break;
-    }
+    // Fillers if finding specific questions is hard
+    const generics = [
+        "Tell me about a challenging bug you fixed.",
+        "How do you prioritize features vs tech debt?",
+        "Explain SOLID principles.",
+        "Design a URL shortening service (System Design)."
+    ];
 
-    return questions.slice(0, 10);
+    return [...questions, ...generics].slice(0, 10);
 };
 
-export const saveToHistory = (entry) => {
-    const history = getHistory();
-    const intel = getCompanyIntel(entry.company);
-    const rounds = generateRoundMap(intel, entry.extractedSkills);
-
-    // Strict Schema Enforcement
+export const saveToHistory = ({ company, role, jdText, extractedSkills, readinessScore, plan, checklist, questions }) => {
+    const history = JSON.parse(localStorage.getItem('prp_history') || '[]');
     const newEntry = {
-        id: Date.now().toString(),
+        id: Date.now().toString(), // Using timestamp as ID for simplicity
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        company: entry.company || "",
-        role: entry.role || "",
-        jdText: entry.jdText,
-        extractedSkills: entry.extractedSkills,
-        roundMapping: rounds.map(r => ({ roundTitle: r.name, focusAreas: [r.focus], whyItMatters: r.why })),
-        checklist: entry.checklist,
-        plan7Days: entry.plan,
-        questions: entry.questions,
-        baseScore: entry.readinessScore,
-        skillConfidenceMap: entry.skillConfidenceMap || {},
-        finalScore: entry.readinessScore
+        company,
+        role,
+        jdText, // storing full text might be heavy, but requested "persist history"
+        extractedSkills,
+        readinessScore,
+        plan,
+        checklist,
+        questions
     };
 
-    localStorage.setItem('analysis_history', JSON.stringify([newEntry, ...history]));
+    history.unshift(newEntry);
+    localStorage.setItem('prp_history', JSON.stringify(history));
     return newEntry;
 };
 
-export const updateEntry = (id, updates) => {
-    const history = getHistory();
-    const entryIndex = history.findIndex(e => e.id.toString() === id.toString());
-    if (entryIndex === -1) return null;
-
-    const updatedEntry = {
-        ...history[entryIndex],
-        ...updates,
-        updatedAt: new Date().toISOString()
-    };
-
-    // Recalculate Final Score if map updated
-    if (updates.skillConfidenceMap) {
-        const allSkills = Object.values(updatedEntry.extractedSkills || {}).flat();
-        let scoreAdjustment = 0;
-        allSkills.forEach(s => {
-            if (updates.skillConfidenceMap[s] === 'know') scoreAdjustment += 2;
-            else if (updates.skillConfidenceMap[s] === 'practice') scoreAdjustment -= 2;
-        });
-        updatedEntry.finalScore = Math.max(0, Math.min(100, (updatedEntry.baseScore || 0) + scoreAdjustment));
-    }
-
-    history[entryIndex] = updatedEntry;
-    localStorage.setItem('analysis_history', JSON.stringify(history));
-    return updatedEntry;
-};
-
 export const getHistory = () => {
-    try {
-        const data = localStorage.getItem('analysis_history');
-        const parsed = data ? JSON.parse(data) : [];
-        // Filter out corrupted entries
-        return parsed.filter(e => e && e.id && e.jdText);
-    } catch (e) {
-        console.error("Failed to parse history", e);
-        return [];
-    }
+    return JSON.parse(localStorage.getItem('prp_history') || '[]');
 };
 
-export const getEntryById = (id) => getHistory().find(e => e.id.toString() === id.toString());
+export const getAnalysis = (id) => {
+    const history = getHistory();
+    return history.find(entry => entry.id === id);
+};
