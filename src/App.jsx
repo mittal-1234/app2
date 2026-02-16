@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import KodNestLayout from './components/KodNestLayout';
+import DashboardShell from './components/DashboardShell';
 import DashboardPage from './pages/DashboardPage';
 import HistoryPage from './pages/HistoryPage';
 import ResultsPage from './pages/ResultsPage';
@@ -19,8 +19,8 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Protected Dashboard Routes - Using New KodNest Layout */}
-        <Route element={<KodNestLayout />}>
+        {/* Protected Dashboard Routes - Using New Dashboard Shell */}
+        <Route element={<DashboardShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/results/:id" element={<ResultsPage />} />
