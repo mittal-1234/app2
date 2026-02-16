@@ -99,7 +99,16 @@ ${analysis.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
 
     if (!analysis) return null;
 
-    const { company, role, extractedSkills, encodedId, plan, checklist, questions } = analysis; // encodedId unused but safe
+    const {
+        company = '',
+        role = '',
+        extractedSkills = {},
+        encodedId,
+        checklist = [],
+        questions = []
+    } = analysis || {};
+
+    const plan = analysis.plan7Days || analysis.plan || [];
     const weakSkills = Object.keys(skillConfidence).filter(s => skillConfidence[s] === 'practice');
 
     return (
