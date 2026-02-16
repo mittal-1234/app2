@@ -155,19 +155,113 @@ export const generateQuestions = (skills) => {
     return [...questions, ...generics].slice(0, 10);
 };
 
+// --- New Intel Logic ---
+
+export const getCompanyProfile = (companyName) => {
+    const lowerName = companyName?.toLowerCase() || '';
+
+    // Heuristic Lists
+    const enterprises = [
+        'amazon', 'google', 'microsoft', 'meta', 'facebook', 'apple', 'netflix',
+        'uber', 'adobe', 'oracle', 'ibm', 'salesforce', 'cisco', 'intel',
+        'tcs', 'infosys', 'wipro', 'accenture', 'cognizant', 'capgemini', 'deloitte',
+        'jpmorgan', 'goldman sachs', 'morgan stanley'
+    ];
+
+    const isEnterprise = enterprises.some(e => lowerName.includes(e));
+
+    if (isEnterprise) {
+        return {
+            size: 'Enterprise',
+            industry: 'Technology & Services',
+            focus: 'Strong emphasis on Data Structures, Algorithms (DSA), and Core CS fundamentals (OS, DBMS, Networks). Patterns are often standardized.',
+            type: 'enterprise'
+        };
+    } else {
+        return {
+            size: 'Startup / Mid-size',
+            industry: 'Product & Innovation',
+            focus: 'Emphasis on practical development skills, framework mastery, and ability to build/ship features. System design may be asked.',
+            type: 'startup'
+        };
+    }
+};
+
+export const generateDetailedRounds = (profile, skills) => {
+    const isEnterprise = profile.type === 'enterprise';
+    const flatSkills = Object.values(skills).flat();
+    const hasWeb = skills['Web']?.length > 0;
+
+    if (isEnterprise) {
+        return [
+            {
+                round: "Round 1: Online Assessment",
+                description: "Aptitude (Quants, Logical) + Medium DSA Coding Problems.",
+                whyMatters: "Filters candidates at scale. Speed and accuracy are key."
+            },
+            {
+                round: "Round 2: Technical Interview I",
+                description: "Live Coding - Data Structures & Algorithms. Focus on Arrays, Trees, Graphs, DP.",
+                whyMatters: "Tests your raw problem-solving ability and optimization skills."
+            },
+            {
+                round: "Round 3: Technical Interview II",
+                description: "CS Fundamentals (OS, DBMS, CN) + Project Deep Dive.",
+                whyMatters: "Verifies your theoretical base and understanding of your own projects."
+            },
+            {
+                round: "Round 4: Managerial / HR",
+                description: "Behavioral questions, Situation handling, Culture fit.",
+                whyMatters: "Assesses team compatibility and long-term potential."
+            }
+        ];
+    } else {
+        // Startup Flow
+        return [
+            {
+                round: "Round 1: Screening / Exploratory",
+                description: "Resume walk-through, past experience discussions, basic tech check.",
+                whyMatters: "Checks communication skills and genuine interest in the product."
+            },
+            {
+                round: "Round 2: Practical / Machine Coding",
+                description: hasWeb ? "Build a small feature/app (React/Node) or fix a bug in existing code." : "Take-home assignment or live pair programming.",
+                whyMatters: "Proofs you can actually write code and build things, not just invert binary trees."
+            },
+            {
+                round: "Round 3: System Design & Depth",
+                description: "Discussing architecture, scalability, or deep dive into a specific technology (e.g., React Internals).",
+                whyMatters: "Tests your engineering maturity and ability to design scalable systems."
+            },
+            {
+                round: "Round 4: Founder / Culture Fit",
+                description: "Vision alignment, agility, and ownership mindset.",
+                whyMatters: "Startups need people who align with the mission and can wear multiple hats."
+            }
+        ];
+    }
+};
+
 export const saveToHistory = ({ company, role, jdText, extractedSkills, readinessScore, plan, checklist, questions }) => {
+
+    // Generate Intel on save
+    const companyProfile = getCompanyProfile(company);
+    const detailedRounds = generateDetailedRounds(companyProfile, extractedSkills);
+
     const history = JSON.parse(localStorage.getItem('prp_history') || '[]');
     const newEntry = {
-        id: Date.now().toString(), // Using timestamp as ID for simplicity
+        id: Date.now().toString(),
         createdAt: new Date().toISOString(),
         company,
         role,
-        jdText, // storing full text might be heavy, but requested "persist history"
+        jdText,
         extractedSkills,
         readinessScore,
         plan,
-        checklist,
-        questions
+        checklist, // Keeping old checklist for backward capability or display fallback
+        questions,
+        companyProfile, // New
+        detailedRounds // New
     };
 
     history.unshift(newEntry);

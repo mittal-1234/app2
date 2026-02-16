@@ -250,27 +250,85 @@ ${analysis.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                     </Card>
                 </div>
 
-                {/* Right Column: Checklist */}
+                {/* Right Column: Intel & Rounds */}
                 <div className="space-y-8">
-                    <Card className="bg-gray-900 text-white space-y-6">
+                    {/* Company Intel Card */}
+                    {analysis.companyProfile && (
+                        <Card className={`text-white space-y-6 relative overflow-hidden ${analysis.companyProfile.type === 'enterprise' ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-indigo-900 to-purple-900'}`}>
+                            {/* Background Elements */}
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                {analysis.companyProfile.type === 'enterprise' ? <Trophy size={100} /> : <Zap size={100} />}
+                            </div>
+
+                            <div className="relative z-10 space-y-4">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
+                                            {analysis.companyProfile.type === 'enterprise' ? <Trophy className="text-yellow-400" size={24} /> : <Zap className="text-yellow-300" size={24} />}
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold">Company Intel</h2>
+                                            <p className="text-xs text-slate-300 uppercase tracking-widest">{analysis.companyProfile.industry}</p>
+                                        </div>
+                                    </div>
+                                    <Badge variant="secondary" className="bg-white/10 text-white border-0">
+                                        {analysis.companyProfile.size}
+                                    </Badge>
+                                </div>
+
+                                <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                                    <p className="text-xs font-bold text-slate-400 uppercase mb-1">Hiring Focus</p>
+                                    <p className="text-sm text-slate-100 leading-relaxed">
+                                        {analysis.companyProfile.focus}
+                                    </p>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    {/* Round Mapping (Timeline) */}
+                    <Card className="bg-white space-y-6">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                                <FileText className="text-indigo-400" size={24} />
-                                <h2 className="text-xl font-bold">Preparation Checklist</h2>
+                                <FileText className="text-indigo-600" size={24} />
+                                <h2 className="text-xl font-bold text-gray-900">Hiring Flow</h2>
                             </div>
-                            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" onClick={() => copyToClipboard(checklist.map(r => `${r.round}\n${r.items.map(i => `- ${i}`).join('\n')}`).join('\n\n'), "Checklist")}>
-                                <Copy size={16} />
-                            </Button>
                         </div>
-                        <div className="space-y-6">
-                            {checklist.map((round, i) => (
-                                <div key={i} className="space-y-3">
-                                    <h3 className="font-bold text-indigo-300 uppercase text-xs tracking-widest border-b border-gray-700 pb-1">{round.round}</h3>
-                                    <ul className="space-y-2">
+
+                        <div className="space-y-0 relative">
+                            {/* Vertical Line */}
+                            <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-indigo-100"></div>
+
+                            {(analysis.detailedRounds || []).map((round, i) => (
+                                <div key={i} className="relative pl-12 pb-8 last:pb-0">
+                                    {/* Node */}
+                                    <div className="absolute left-0 top-1 w-8 h-8 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-sm z-10">
+                                        {i + 1}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h3 className="font-bold text-gray-900 leading-tight">{round.round}</h3>
+                                        <p className="text-sm text-gray-600">{round.description}</p>
+                                        <div className="flex items-center gap-1.5 text-xs text-indigo-500 font-medium bg-indigo-50 px-3 py-1.5 rounded-md w-fit">
+                                            <AlertCircle size={12} />
+                                            <span>Why it matters: {round.whyMatters}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Fallback to old checklist if new rounds not present (backward compatibility) */}
+                            {!analysis.detailedRounds && analysis.checklist.map((round, i) => (
+                                <div key={i} className="relative pl-12 pb-8 last:pb-0">
+                                    <div className="absolute left-0 top-1 w-8 h-8 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm z-10">
+                                        {i + 1}
+                                    </div>
+                                    <h3 className="font-bold text-gray-900">{round.round}</h3>
+                                    <ul className="mt-2 space-y-1">
                                         {round.items.map((item, j) => (
-                                            <li key={j} className="flex items-start gap-3 text-sm text-gray-300">
-                                                <CheckCircle2 size={16} className="mt-0.5 text-gray-500 shrink-0" />
-                                                <span>{item}</span>
+                                            <li key={j} className="text-sm text-gray-500 flex items-center gap-2">
+                                                <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+                                                {item}
                                             </li>
                                         ))}
                                     </ul>
@@ -278,6 +336,10 @@ ${analysis.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                             ))}
                         </div>
                     </Card>
+
+                    <p className="text-center text-xs text-gray-400 italic">
+                        Demo Mode: Company intel generated heuristically.
+                    </p>
                 </div>
             </div>
         </div>
