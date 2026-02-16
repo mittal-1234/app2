@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, FileCheck, Library, User, Menu, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FileCheck, Library, User, Menu, X, History } from 'lucide-react';
 
 const DashboardShell = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -12,6 +12,7 @@ const DashboardShell = () => {
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+        { icon: History, label: 'History', path: '/history' },
         { icon: BookOpen, label: 'Practice', path: '/practice' },
         { icon: FileCheck, label: 'Assessments', path: '/assessments' },
         { icon: Library, label: 'Resources', path: '/resources' },
