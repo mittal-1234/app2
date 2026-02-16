@@ -169,3 +169,15 @@ export const getAnalysis = (id) => {
     const history = getHistory();
     return history.find(entry => entry.id === id);
 };
+
+export const updateHistoryEntry = (id, updates) => {
+    const history = getHistory();
+    const index = history.findIndex(entry => entry.id === id);
+
+    if (index !== -1) {
+        history[index] = { ...history[index], ...updates };
+        localStorage.setItem('prp_history', JSON.stringify(history));
+        return history[index];
+    }
+    return null;
+};
