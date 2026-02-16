@@ -11,7 +11,13 @@ const HistoryPage = () => {
     const [history, setHistory] = useState([]);
 
     useEffect(() => {
-        setHistory(getHistory());
+        const rawHistory = getHistory();
+        // Filter out corrupted entries (missing id or createdAt)
+        const validHistory = rawHistory.filter(entry => entry && entry.id && entry.createdAt);
+        if (validHistory.length < rawHistory.length) {
+            console.warn("Some corrupted history entries were skipped.");
+        }
+        setHistory(validHistory);
     }, []);
 
     const clearHistory = () => {
